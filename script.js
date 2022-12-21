@@ -1,3 +1,8 @@
+//Formulaire d'encodage de la ville
+
+
+//Récupération des données météo pour la ville choisie
+
 // async function getWeatherOnClick () {
 //     try {
 //     console.log("???");
@@ -11,11 +16,29 @@
 //     }
 // }
 
-function getWeatherStorage () {
-    console.log("Récupéré du localStorage: ");
+function getWeatherOnClick () {
     let dataWeather = JSON.parse(localStorage.getItem("data"));
+    console.log("Récupéré du localStorage: ");
     console.log(dataWeather);
+    return dataWeather
     }
 
-getWeatherStorage();
+
+
+//Affichage des données météo récupérées
+//let now = new Date();
+let data = getWeatherOnClick();
+
+console.log("dt");
+console.log(data.list[0].dt);
+let previsionHour = new Date(data.list[0].dt*1000);
+//On prend comme heure locale du lieu demandé : l'heure UTC de la prévision + le décalage
+previsionHour.setHours(previsionHour.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
+console.log(data.city.timezone/3600);//1h
+console.log(previsionHour.getHours()); //Heure locale
+console.log(previsionHour.getDate());//Date locale 
+
+
+
+
 
