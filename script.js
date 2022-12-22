@@ -35,14 +35,14 @@ function getTwoIcons(icons){
     let nb = 2;
 
     if (icons.length > 5){
-        twoIcons.push(icons[icons.length - 5]);
-        twoIcons.push(icons[icons.length - 2]);
+        twoIcons.push(icons[icons.length - 6]);
+        twoIcons.push(icons[icons.length - 3]);
     } else if ((icons.length == 5)||(icons.length == 4)){
         twoIcons.push(icons[0]);
-        twoIcons.push(icons[icons.length - 2]);
+        twoIcons.push(icons[icons.length - 3]);
     } else {
         twoIcons.push(icons[0]);
-        twoIcons.push(icons[0]);
+        twoIcons.push(icons[icons.length-1]);
     }
 
     if (twoIcons[0] == twoIcons[1]){
@@ -57,38 +57,30 @@ function getTwoIcons(icons){
 function displayweatherByHour (data){
     const daysContainer = document.querySelector(".synthese");
     const daysDetailedContainer = document.querySelector(".previsions");
-    //initialisation de la variable day qui permettra de repéréer quand on passe au jour suivant
+    //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
     let previsionDate = new Date(data.list[0].dt*1000);
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
     let day  = (previsionDate.getDate() - 1);
     let i = 0
+    let currentPrevisionDay = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
     let temperatures = [];
     let icons = [];
-    console.log("avant for");
     //Création des zones HTML pour chaque prévision de la liste et ajout de celles-ci dans le bon jour
     for (let li of data.list){
         let currentPrevisionDate = new Date(li.dt*1000);
         currentPrevisionDate.setHours(currentPrevisionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
         let currentDay  = currentPrevisionDate.getDate();
         let currentHour = currentPrevisionDate.getHours();
-        console.log("dans for avant if");
-        console.log(temperatures.length);
         //Passer au jour suivant
         if (currentDay != day){
             if (temperatures.length > 0){
                 let MinMax = getMinMax(temperatures);
-                console.log("Températures et MinMax");
-                console.log(temperatures);
-                console.log(MinMax);
                 let twoIcons = getTwoIcons(icons);
-                console.log("icons et TwoIcons");
-                console.log(icons);
-                console.log(twoIcons);
                 temperatures.splice(0,temperatures.length);
                 icons.splice(0,icons.length);
                 const byDay = `
                     <div class="synthese__day">
-                        <h4 class="synthese__weekday">${currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"})}</h4>
+                        <h4 class="synthese__weekday">${currentPrevisionDay}</h4>
                         <div class="synthese__icons">
                             <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
                             <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"id="filtreIcon"/>
@@ -99,13 +91,11 @@ function displayweatherByHour (data){
                         </div>
                     </div>
                 `
-                console.log("toto");
                 daysContainer.innerHTML += byDay;
             }
             day += 1;
             i += 1;
             if (i>5) break;
-            console.log("avant byDay");
             
             const byDayDetailed = `
                 <div class="previsions__day">
@@ -117,9 +107,7 @@ function displayweatherByHour (data){
         }
         temperatures.push(li.main.temp);
         icons.push(li.weather[0].icon);
-        console.log(li.main.temp);
-        console.log(temperatures);
-        console.log(icons);
+        currentPrevisionDay = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
         //Créer un zone pour la prévision à l'heure donnée, et la mettre dans la div du jour courant
         const byHours = `
             <div class="previsions__generalParHeure">
@@ -134,28 +122,25 @@ function displayweatherByHour (data){
 }        
 
 //Récupération des données météo de l'API OpenWeather et affichage de celle-ci
-async function getWeatherOnClick () {
-    try {
-        console.log("???");
-        const response = await fetch("https://api.openweathermap.org/data/2.5/forecast?lat=50.62&lon=4.56&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric");
-        const json = await response.json();
-        localStorage.setItem("data",JSON.stringify(json));
-        displayweatherByHour(json);
-    }
-    catch(error) {
-        console.log('Erreur : impossible de récupérer les données')
-    }
-}
+// async function getWeatherOnClick () {
+//     try {
+//         const response = await fetch("https://api.openweathermap.org/data/2.5/forecast?lat=50.62&lon=4.56&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric");
+//         const json = await response.json();
+//         localStorage.setItem("data",JSON.stringify(json));
+//         displayweatherByHour(json);
+//     }
+//     catch(error) {
+//         console.log('Erreur : impossible de récupérer les données')
+//     }
+// }
 
 //Récupération des données de localStorage
-// function getWeatherOnClick () {
-//     let dataWeather = JSON.parse(localStorage.getItem("data"));
-//     console.log("Récupéré du localStorage: ");
-//     console.log(dataWeather);
-//     return dataWeather
-//     }
+function getWeatherOnClick () {
+    let dataWeather = JSON.parse(localStorage.getItem("data"));
+    displayweatherByHour(dataWeather);
+    }
 
-let data = getWeatherOnClick();
+getWeatherOnClick();
         
         
 
