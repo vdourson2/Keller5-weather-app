@@ -1,1 +1,19 @@
-/*# sourceMappingURL=style.css.map */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.previsions {
+  border: 1px solid black;
+  width: 90vw;
+  margin: auto;
+  text-align: center;
+}
+.previsions__day {
+  border: 1px solid black;
+  width: 90%;
+  margin: 10vw auto;
+}
+.previsions__weekday {
+  border: 1px solid black;
+}/*# sourceMappingURL=style.css.map */
