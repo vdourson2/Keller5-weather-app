@@ -18,12 +18,22 @@
     <h1> Météo pour Court-Saint-Etienne</h1>
 
     <div class="synthese">
-        
+        <!-- <div class="synthese__day">
+            <h4 class="synthese__weekday"></h4>
+            <div class="synthese__icons">
+                <p class="synthese__icon"></p>
+                <p class="synthese__icon"></p>
+            </div>
+            <div class="synthese__minmax">
+                <p class="synthese__temperature"></p>
+                <p class="synthese__temperature"></p>
+            </div>
+        </div> -->
     </div>
 
     <div class="previsions">
     <!-- <div class="previsions__day">
-            <h4 class="previsions__weekday">Aujourd'hui</h4>
+            <h4 class="previsions__weekday"></h4>
             <div class="previsions__divHours">
                 <div class="previsions__generalParHeure">
                     <p class="previsions__heure"></p>
@@ -38,5 +48,18 @@
             </div>
         </div> -->
     </div>
+
+    <div class="synthese__day">
+        <h4 class="synthese__weekday">${currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"})}</h4>
+        <div class="synthese__icons">
+            <p class="synthese__icon">${twoIcons[0]}</p>
+            <p class="synthese__icon" id="filtreIcon">${twoIcons[1]}</p>
+        </div>
+        <div class="synthese__minmax">
+            <p class="synthese__temperature">${MinMax[0]}</p>
+            <p class="synthese__temperature" id="filtreT">${MinMax[1]}</p>
+        </div>
+    </div>
+
 </body>
 </html>
