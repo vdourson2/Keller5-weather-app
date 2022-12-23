@@ -133,36 +133,38 @@ function displayweatherByHour (data){
 }        
 
 //Récupération des données météo de l'API OpenWeather et affichage de celle-ci
-// async function getWeatherOnClick () {
-//     let country = input.value;
-//     document.getElementById('formulaire').reset();
-//     document.querySelector('h1').textContent = `Météo pour ${country}`;  
-//     try {
-//         const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
-//         const json = await response.json();
-//         localStorage.setItem("data",JSON.stringify(json));
-//         displayweatherByHour(json);
-//     }
-//     catch(error) {
-//         console.log('Erreur : impossible de récupérer les données')
-//     }
-// }
+async function getWeatherOnClick () {
+    let country = input.value;
+    document.getElementById('formulaire').reset();
+    document.querySelector('h1').textContent = `Météo à ${country}`; 
+    document.querySelector('.synthese').innerHTML=""; 
+    document.querySelector('.previsions').innerHTML=""; 
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
+        const json = await response.json();
+        localStorage.setItem("data",JSON.stringify(json));
+        displayweatherByHour(json);
+    }
+    catch(error) {
+        console.log('Erreur : impossible de récupérer les données')
+    }
+}
 
 //Récupération des données de localStorage
-function getWeatherOnClick () {
-    let dataWeather = JSON.parse(localStorage.getItem("data"));
-    displayweatherByHour(dataWeather);
-    }
+// function getWeatherOnClick () {
+//     let dataWeather = JSON.parse(localStorage.getItem("data"));
+//     displayweatherByHour(dataWeather);
+//     }
 
 //A DECOMMENTER 
-//let button = document.querySelector('button');
-//let input = document.querySelector('#country');
-//button.addEventListener('click', getWeatherOnClick);
+let button = document.querySelector('button');
+let input = document.querySelector('#country');
+button.addEventListener('click', getWeatherOnClick);
 
 getWeatherOnClick();
 
 //A RESOUDRE
-// input.addEventListener('keyup', (e) => {
+// input.addEventListener('keydown', (e) => {
 //     if (e.code == "Enter"){
 //         getWeatherOnClick();
 //     }
