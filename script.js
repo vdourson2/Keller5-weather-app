@@ -62,7 +62,7 @@ function displayweatherByHour (data){
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
     let day  = (previsionDate.getDate() - 1);
     let i = 0
-    let currentPrevisionDay = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
+    let weekdayForSynthese = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
     let temperatures = [];
     let icons = [];
     //Création des zones HTML pour chaque prévision de la liste et ajout de celles-ci dans le bon jour :
@@ -80,7 +80,7 @@ function displayweatherByHour (data){
                 temperatures.splice(0,temperatures.length);
                 const byDay = `
                     <div class="synthese__day">
-                        <h4 class="synthese__weekday">${currentPrevisionDay}</h4>
+                        <h4 class="synthese__weekday">${weekdayForSynthese}</h4>
                         <div class="synthese__icons">
                             <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
                             <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
@@ -118,7 +118,7 @@ function displayweatherByHour (data){
         //et enregistrement du weekday de cette journée.
         temperatures.push(li.main.temp);
         icons.push(li.weather[0].icon);
-        currentPrevisionDay = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
+        weekdayForSynthese = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
         //Créer un zone pour la prévision à l'heure donnée, et la mettre dans la div du jour courant
         const byHours = `
             <div class="previsions__generalParHeure">
@@ -133,25 +133,40 @@ function displayweatherByHour (data){
 }        
 
 //Récupération des données météo de l'API OpenWeather et affichage de celle-ci
-async function getWeatherOnClick () {
-    try {
-        const response = await fetch("https://api.openweathermap.org/data/2.5/forecast?lat=50.62&lon=4.56&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric");
-        const json = await response.json();
-        localStorage.setItem("data",JSON.stringify(json));
-        displayweatherByHour(json);
-    }
-    catch(error) {
-        console.log('Erreur : impossible de récupérer les données')
-    }
-}
+// async function getWeatherOnClick () {
+//     let country = input.value;
+//     document.getElementById('formulaire').reset();
+//     document.querySelector('h1').textContent = `Météo pour ${country}`;  
+//     try {
+//         const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
+//         const json = await response.json();
+//         localStorage.setItem("data",JSON.stringify(json));
+//         displayweatherByHour(json);
+//     }
+//     catch(error) {
+//         console.log('Erreur : impossible de récupérer les données')
+//     }
+// }
 
 //Récupération des données de localStorage
-// function getWeatherOnClick () {
-//     let dataWeather = JSON.parse(localStorage.getItem("data"));
-//     displayweatherByHour(dataWeather);
-//     }
+function getWeatherOnClick () {
+    let dataWeather = JSON.parse(localStorage.getItem("data"));
+    displayweatherByHour(dataWeather);
+    }
+
+//A DECOMMENTER 
+//let button = document.querySelector('button');
+//let input = document.querySelector('#country');
+//button.addEventListener('click', getWeatherOnClick);
 
 getWeatherOnClick();
+
+//A RESOUDRE
+// input.addEventListener('keyup', (e) => {
+//     if (e.code == "Enter"){
+//         getWeatherOnClick();
+//     }
+// })
         
         
 

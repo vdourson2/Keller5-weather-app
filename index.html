@@ -11,11 +11,20 @@
 </head>
 <body>
     <header>
-        <form>
-
-        </form>
+        
     </header>
-    <h1> Météo pour Court-Saint-Etienne</h1>
+
+    <form id="formulaire">
+        <input type="text" placeholder="Country" id="country"/>
+        <!-- <select id = "country">
+            <option value="belgium" selected="selected">Belgium</option>
+            <option value="france">France</option>
+            <option value="spain">Spain</option>
+        </select> -->
+        <button type="button">Enter</button>
+    </form>
+
+    <h1> Météo à Court-Saint-Etienne</h1>
 
     <div class="synthese">
         <!-- <div class="synthese__day">
@@ -38,10 +47,6 @@
                 <div class="previsions__generalParHeure">
                     <p class="previsions__heure"></p>
                     <img class="previsions__icone" alt="icone de météo"/>
-                    <div class="previsions__humidité">
-                        <div class="previsions__pourcentage"></div>
-                        <div class="previsions__hauteur"></div>
-                    </div>
                     <p class="previsions__t"></p>
                     <p class="previsions__descr"></p>
                 </div>
