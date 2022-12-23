@@ -1,6 +1,3 @@
-//Formulaire d'encodage de la ville
-
-
 //Fonction de calcul des températures min et max d'un tableau.
 //Cette fonction prend comme paramètre un tableau de températures,
 //et renvoie un tableau contenant 3 données : la première est la t°min, 
@@ -53,7 +50,9 @@ function getTwoIcons(icons){
     return twoIcons
 };
 
-//Affichage des données météo récupérées dans data, jour après jour, toutes les 3 heures
+//Affichage des données météo récupérées dans data, jour après jour, 
+//sous forme de synthese journalière d'une part,
+//et toutes les 3 heures par jour d'autre part.
 function displayweatherByHour (data){
     const daysContainer = document.querySelector(".synthese");
     const daysDetailedContainer = document.querySelector(".previsions");
@@ -111,8 +110,7 @@ function displayweatherByHour (data){
                     <div class="previsions__divHours"></div>
                 </div>
             `;
-            daysDetailedContainer.innerHTML += byDayDetailed;
-            
+            daysDetailedContainer.innerHTML += byDayDetailed;   
         }
         //Ajout des données de l'heure dans les tableaux de températures et d'icones d'une journée
         //et enregistrement du weekday de cette journée.
@@ -132,13 +130,13 @@ function displayweatherByHour (data){
     }
 }        
 
-//Récupération des données météo de l'API OpenWeather et affichage de celle-ci
+//Récupération des données météo de l'API OpenWeather et affichage de celles-ci
 async function getWeatherOnClick () {
     let country = input.value;
-    document.getElementById('formulaire').reset();
-    document.querySelector('h1').textContent = `Météo à ${country}`; 
+    document.querySelector('#country').value="";
     document.querySelector('.synthese').innerHTML=""; 
     document.querySelector('.previsions').innerHTML=""; 
+    document.querySelector('h1').textContent = `Météo à ${country}`; 
     try {
         const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
         const json = await response.json();
@@ -156,19 +154,16 @@ async function getWeatherOnClick () {
 //     displayweatherByHour(dataWeather);
 //     }
 
-//A DECOMMENTER 
+//Deux évènements qui appellent la fct getWeatherOnClick
+//si on presse la touche enter, ou si on clique sur le bouton.
 let button = document.querySelector('button');
 let input = document.querySelector('#country');
 button.addEventListener('click', getWeatherOnClick);
-
-getWeatherOnClick();
-
-//A RESOUDRE
-// input.addEventListener('keydown', (e) => {
-//     if (e.code == "Enter"){
-//         getWeatherOnClick();
-//     }
-// })
+input.addEventListener('keyup', (e) => {
+    if (e.code == "Enter"){
+        getWeatherOnClick();
+    }
+})
         
         
 

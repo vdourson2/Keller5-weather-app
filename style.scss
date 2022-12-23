@@ -11,7 +11,7 @@ body{
    font-family: $general;
 }
 
-form{
+#formulaire{
     text-align: center;
     width : 80%;
     margin : 10vw auto;
@@ -102,7 +102,7 @@ h1{
 }
 
 @media screen and (min-width:900px){
-    form{
+    #formulaire{
         width : 40%;
         margin : 4vw auto;
     }
