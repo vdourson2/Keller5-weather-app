@@ -89,7 +89,7 @@ const cardByHours = (li, date) => {
 //Affichage des données météo récupérées dans data, jour après jour, 
 //sous forme de synthese journalière d'une part,
 //et toutes les 3 heures par jour d'autre part.
-function displayweatherByHour (data){
+function createArraysWeather (data){
     //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
     let previsionDate = new Date(data.list[0].dt*1000);
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
@@ -99,7 +99,7 @@ function displayweatherByHour (data){
     let temperatures = [];
     let icons = [];
     let arraySyntheseDays = [];
-    let daysDetailed = [];
+    let arrayDaysDetailed = [];
     //Création des zones HTML pour chaque prévision de la liste et ajout de celles-ci dans le bon jour :
     for (let li of data.list){
         let currentPrevisionDate = new Date(li.dt*1000);
@@ -118,7 +118,7 @@ function displayweatherByHour (data){
             let divDaysDetailed = document.createElement('div');
             divDaysDetailed.classList.add('previsions__day');
             divDaysDetailed.innerHTML = cardDaysDetailed(currentPrevisionDate);
-            daysDetailed.push(divDaysDetailed);  
+            arrayDaysDetailed.push(divDaysDetailed);  
         }
         //Ajout des données de l'heure dans les tableaux de températures et d'icones d'une journée
         //et enregistrement du weekday de cette journée.
@@ -126,9 +126,10 @@ function displayweatherByHour (data){
         icons.push(li.weather[0].icon);
         weekdayForSynthese = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
         //Créer un zone pour la prévision à l'heure donnée, et la mettre dans la div du jour courant
-        daysDetailed[daysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
-        // daysDetailedContainer.lastElementChild.querySelector(".previsions__divHours").innerHTML += byHours;
+        arrayDaysDetailed[arrayDaysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
     }
+
+
     const daysContainer = document.querySelector(".synthese");
     const daysDetailedContainer = document.querySelector(".previsions");
     for (let el of arraySyntheseDays){
@@ -146,7 +147,7 @@ function displayweatherByHour (data){
             temperatureFiltre.style.display = "none";
         }
     }
-    for (let el of daysDetailed){
+    for (let el of arrayDaysDetailed){
         daysDetailedContainer.appendChild(el);
     }
 }        
@@ -162,7 +163,7 @@ async function getWeatherOnClick () {
         const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
         const json = await response.json();
         localStorage.setItem("data",JSON.stringify(json));
-        displayweatherByHour(json);
+        createArraysWeather(json);
     }
     catch(error) {
         console.log('Erreur : impossible de récupérer les données')
@@ -172,7 +173,7 @@ async function getWeatherOnClick () {
 //Récupération des données de localStorage
 // function getWeatherOnClick () {
 //     let dataWeather = JSON.parse(localStorage.getItem("data"));
-//     displayweatherByHour(dataWeather);
+//     createArraysWeather(dataWeather);
 //     }
 
 //Deux évènements qui appellent la fct getWeatherOnClick

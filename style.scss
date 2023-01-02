@@ -144,11 +144,13 @@ h1{
         //Changé : 
         &__divHours{
             display : flex;
+            justify-content : flex-end;
         }
         &__generalParHeure{
             border : 1px solid black;
-            padding : 1.4vw 1.8vw;  
-            width : 11%;
+            padding : 1.4vw 1.8vw; 
+            box-sizing: border-box;
+            width : 12.5%;
         }
         &__icone{
             width : 60px;

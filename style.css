@@ -135,11 +135,13 @@ h1 {
   }
   .previsions__divHours {
     display: flex;
+    justify-content: flex-end;
   }
   .previsions__generalParHeure {
     border: 1px solid black;
     padding: 1.4vw 1.8vw;
-    width: 11%;
+    box-sizing: border-box;
+    width: 12.5%;
   }
   .previsions__icone {
     width: 60px;
