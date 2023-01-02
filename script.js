@@ -50,6 +50,47 @@ function getTwoIcons(icons){
     return twoIcons
 };
 
+//Refactor
+
+const prepareSyntheseDay = (icons, temperatures, weekday) => {
+    let twoIcons = getTwoIcons(icons);
+    let MinMax = getMinMax(temperatures);
+    icons.splice(0,icons.length);
+    temperatures.splice(0,temperatures.length);
+    const byDay = `
+        <div class="synthese__day">
+            <h4 class="synthese__weekday">${weekday}</h4>
+            <div class="synthese__icons">
+                <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
+                <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
+            </div>
+            <div class="synthese__minmax">
+                <p class="synthese__temperature">${Math.round(MinMax[0])}°</p>
+                <p class="synthese__temperature--filtre">${Math.round(MinMax[1])}°</p>
+            </div>
+        </div>
+    `
+    // daysContainer.innerHTML += byDay;
+    // //Si les valeurs de température min et max ou les icones sont identiques
+    // //ne pas afficher la deuxième
+    // if(twoIcons[2] == 1){
+    //     daysContainer.lastElementChild.querySelector(".synthese__icon--filtre").style.display = "none";
+    // }
+    // if(MinMax[2] == 1){
+    //     daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre").style.display = "none";
+    // }
+    return byDay
+}
+
+
+
+
+
+
+
+
+
+
 //Affichage des données météo récupérées dans data, jour après jour, 
 //sous forme de synthese journalière d'une part,
 //et toutes les 3 heures par jour d'autre part.
@@ -60,7 +101,7 @@ function displayweatherByHour (data){
     let previsionDate = new Date(data.list[0].dt*1000);
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
     let day  = (previsionDate.getDate() - 1);
-    let i = 0
+    let i = 0;
     let weekdayForSynthese = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
     let temperatures = [];
     let icons = [];
@@ -71,33 +112,38 @@ function displayweatherByHour (data){
         //Créer un nouveau jour :
         if (currentPrevisionDate.getDate() != day){            
             //Créer un nouvel encart avec le résumé du jour précédent 
-            //à la fin d'un jour, avant de passer au suivant :
+            //à la fin d'un jour, avant de passer au suivant (sauf pour l'initialisation au premier jour) :
             if (temperatures.length > 0){
-                let twoIcons = getTwoIcons(icons);
-                let MinMax = getMinMax(temperatures);
-                icons.splice(0,icons.length);
-                temperatures.splice(0,temperatures.length);
-                const byDay = `
-                    <div class="synthese__day">
-                        <h4 class="synthese__weekday">${weekdayForSynthese}</h4>
-                        <div class="synthese__icons">
-                            <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
-                            <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
-                        </div>
-                        <div class="synthese__minmax">
-                            <p class="synthese__temperature">${Math.round(MinMax[0])}°</p>
-                            <p class="synthese__temperature--filtre">${Math.round(MinMax[1])}°</p>
-                        </div>
-                    </div>
-                `
-                daysContainer.innerHTML += byDay;
-                //Si les valeurs de température min et max ou les icones sont identiques
+                daysContainer.innerHTML += prepareSyntheseDay(icons, temperatures, weekdayForSynthese);
+                // let twoIcons = getTwoIcons(icons);
+                // let MinMax = getMinMax(temperatures);
+                // icons.splice(0,icons.length);
+                // temperatures.splice(0,temperatures.length);
+                // const byDay = `
+                //     <div class="synthese__day">
+                //         <h4 class="synthese__weekday">${weekdayForSynthese}</h4>
+                //         <div class="synthese__icons">
+                //             <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
+                //             <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
+                //         </div>
+                //         <div class="synthese__minmax">
+                //             <p class="synthese__temperature">${Math.round(MinMax[0])}°</p>
+                //             <p class="synthese__temperature--filtre">${Math.round(MinMax[1])}°</p>
+                //         </div>
+                //     </div>
+                // `
+                // daysContainer.innerHTML += byDay;
+                //Si les valeurs de température min et max ou les deux icones sont identiques
                 //ne pas afficher la deuxième
-                if(twoIcons[2] == 1){
-                    daysContainer.lastElementChild.querySelector(".synthese__icon--filtre").style.display = "none";
+                let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
+                let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
+                let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
+                let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
+                if (icon1.src == iconFiltre.src){
+                    iconFiltre.style.display = "none";
                 }
-                if(MinMax[2] == 1){
-                    daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre").style.display = "none";
+                if (temperature1.textContent == temperatureFiltre.textContent){
+                    temperatureFiltre.style.display = "none";
                 }
             }
             day += 1;
