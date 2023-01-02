@@ -20,7 +20,7 @@ function getMinMax(temp){
 
 //Fonction d'extraction de deux icones de weather en matinée et en fin d'après-midi
 //Cette fonction prend comme paramètre un tableau d'icones
-//et renvoie un tableau contenant 2 données : l'icone de matinée, l'icone d'après-midi
+//et renvoie un tableau contenant 2 données : l'icone de matinée, et l'icone d'après-midi
 function getTwoIcons(icons){
     let twoIcons = [];
     if (icons.length > 4){
@@ -85,38 +85,39 @@ const cardByHours = (li, date) => {
     return byHours;
 }
 
-
-
+//Fonction qui vérifie si les valeurs de température min et max et/ou les deux icones 
+//de la synthese du dernier jour encodé sont identiques, et qui n'affiche que la première valeur si c'est le cas.
+//La fonction prend comme argument une div contenant les jours de synthèse déjà encodés
+const filterIconsTemperatures = (daysContainer) => {
+    let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
+    let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
+    let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
+    let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
+    if (icon1.src == iconFiltre.src){
+        iconFiltre.style.display = "none";
+    }
+    if (temperature1.textContent == temperatureFiltre.textContent){
+        temperatureFiltre.style.display = "none";
+    }
+}
 
 //Fonction qui prend comme argument un objet contenant deux tableaux
 //à afficher dans le DOM
 const displayArraysWeather = (arrays) => {
-    const daysContainer = document.querySelector(".synthese");
-    const daysDetailedContainer = document.querySelector(".previsions");
+    let daysContainer = document.querySelector(".synthese");
+    let daysDetailedContainer = document.querySelector(".previsions");
     for (let el of arrays.syntheseDays){
         daysContainer.innerHTML += el;
-         //Si les valeurs de température min et max ou les deux icones sont identiques
-        //ne pas afficher la deuxième
-        let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
-        let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
-        let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
-        let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
-        if (icon1.src == iconFiltre.src){
-            iconFiltre.style.display = "none";
-        }
-        if (temperature1.textContent == temperatureFiltre.textContent){
-            temperatureFiltre.style.display = "none";
-        }
+        filterIconsTemperatures(daysContainer);
     }
     for (let el of arrays.daysDetailed){
         daysDetailedContainer.appendChild(el);
     }
 }
 
-
-//Affichage des données météo récupérées dans data, jour après jour, 
-//sous forme de synthese journalière d'une part,
-//et toutes les 3 heures par jour d'autre part.
+//Traitement des données météo passées comme argument sous forme d'objet "data".
+//La fonction retourne un objet contenant deux tableaux :
+//un tableau avec les synthèses par jour et un tableau avec les prévisions détaillées heure par heure pour chaque jour 
 function createArraysWeather (data){
     //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
     let previsionDate = new Date(data.list[0].dt*1000);
