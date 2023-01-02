@@ -86,53 +86,14 @@ const cardByHours = (li, date) => {
 }
 
 
-//Affichage des données météo récupérées dans data, jour après jour, 
-//sous forme de synthese journalière d'une part,
-//et toutes les 3 heures par jour d'autre part.
-function createArraysWeather (data){
-    //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
-    let previsionDate = new Date(data.list[0].dt*1000);
-    previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
-    let day  = (previsionDate.getDate() - 1);
-    let i = 0;
-    let weekdayForSynthese = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
-    let temperatures = [];
-    let icons = [];
-    let arraySyntheseDays = [];
-    let arrayDaysDetailed = [];
-    //Création des zones HTML pour chaque prévision de la liste et ajout de celles-ci dans le bon jour :
-    for (let li of data.list){
-        let currentPrevisionDate = new Date(li.dt*1000);
-        currentPrevisionDate.setHours(currentPrevisionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
-        //Créer un nouveau jour :
-        if (currentPrevisionDate.getDate() != day){            
-            //Créer un nouvel encart avec le résumé du jour précédent 
-            //à la fin d'un jour, avant de passer au jour suivant (sauf pour l'initialisation au premier jour) :
-            if (temperatures.length > 0){
-                arraySyntheseDays.push(cardSyntheseDay(icons, temperatures, weekdayForSynthese)); 
-            }
-            day += 1;
-            i += 1;
-            if (i>5) break; //S'arrêter à la fin du 4ème jour après le jour actuel
-            //Créer un zone dans laquelle les données par heure de la journée seront insérées,
-            let divDaysDetailed = document.createElement('div');
-            divDaysDetailed.classList.add('previsions__day');
-            divDaysDetailed.innerHTML = cardDaysDetailed(currentPrevisionDate);
-            arrayDaysDetailed.push(divDaysDetailed);  
-        }
-        //Ajout des données de l'heure dans les tableaux de températures et d'icones d'une journée
-        //et enregistrement du weekday de cette journée.
-        temperatures.push(li.main.temp);
-        icons.push(li.weather[0].icon);
-        weekdayForSynthese = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
-        //Créer un zone pour la prévision à l'heure donnée, et la mettre dans la div du jour courant
-        arrayDaysDetailed[arrayDaysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
-    }
 
 
+//Fonction qui prend comme argument un objet contenant deux tableaux
+//à afficher dans le DOM
+const displayArraysWeather = (arrays) => {
     const daysContainer = document.querySelector(".synthese");
     const daysDetailedContainer = document.querySelector(".previsions");
-    for (let el of arraySyntheseDays){
+    for (let el of arrays.syntheseDays){
         daysContainer.innerHTML += el;
          //Si les valeurs de température min et max ou les deux icones sont identiques
         //ne pas afficher la deuxième
@@ -147,9 +108,62 @@ function createArraysWeather (data){
             temperatureFiltre.style.display = "none";
         }
     }
-    for (let el of arrayDaysDetailed){
+    for (let el of arrays.daysDetailed){
         daysDetailedContainer.appendChild(el);
     }
+}
+
+
+//Affichage des données météo récupérées dans data, jour après jour, 
+//sous forme de synthese journalière d'une part,
+//et toutes les 3 heures par jour d'autre part.
+function createArraysWeather (data){
+    //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
+    let previsionDate = new Date(data.list[0].dt*1000);
+    previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
+    let day  = (previsionDate.getDate() - 1);
+    let i = 0;
+    let weekdayForSynthese = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
+    let temperatures = [];
+    let icons = [];
+    let arraySyntheseDays = [];
+    let arrayDaysDetailed = [];
+    //Parcourir chaque prévision de la liste :
+    for (let li of data.list){
+        let currentPrevisionDate = new Date(li.dt*1000);
+        currentPrevisionDate.setHours(currentPrevisionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
+        //Si le jour courant est un nouveau jour : 
+        if (currentPrevisionDate.getDate() != day){            
+            //Ajouter un nouvel élément dans le tableau des synthèses, contenant les données du jour qui vient de se terminer
+            //(sauf pour l'initialisation du premier jour) :
+            if (i > 0){
+                arraySyntheseDays.push(cardSyntheseDay(icons, temperatures, weekdayForSynthese)); 
+            }
+            day += 1;
+            i += 1;
+            if (i>5) break; //S'arrêter à la fin du 4ème jour après le jour actuel
+            //Ajouter un nouvel élément dans le tableau des jours détaillés:
+            let divDaysDetailed = document.createElement('div');
+            divDaysDetailed.classList.add('previsions__day');
+            divDaysDetailed.innerHTML = cardDaysDetailed(currentPrevisionDate);
+            arrayDaysDetailed.push(divDaysDetailed);  
+        }
+        //Pour l'élément courant de la liste, ajout des données
+        //dans les tableaux de températures et d'icones de la journée en cours,
+        //et enregistrement du weekday de cette journée:
+        temperatures.push(li.main.temp);
+        icons.push(li.weather[0].icon);
+        weekdayForSynthese = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
+        //Ajouter les prévisions détaillées de l'heure courante au dernier élément du 
+        //tableau des jours détaillés :
+        arrayDaysDetailed[arrayDaysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
+    }
+
+    return {
+        syntheseDays : arraySyntheseDays,
+        daysDetailed : arrayDaysDetailed,
+    };
+    
 }        
 
 //Récupération des données météo de l'API OpenWeather et affichage de celles-ci
@@ -163,7 +177,7 @@ async function getWeatherOnClick () {
         const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
         const json = await response.json();
         localStorage.setItem("data",JSON.stringify(json));
-        createArraysWeather(json);
+        displayArraysWeather(createArraysWeather(json));
     }
     catch(error) {
         console.log('Erreur : impossible de récupérer les données')
