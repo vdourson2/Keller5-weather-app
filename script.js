@@ -1,12 +1,11 @@
 //Fonction de calcul des températures min et max d'un tableau.
 //Cette fonction prend comme paramètre un tableau de températures,
-//et renvoie un tableau contenant 3 données : la première est la t°min, 
-//la deuxième est la t°max, et la troisième indique si le min est égal au max. 
+//et renvoie un tableau contenant 2 données : la première est la t°min, 
+//et la deuxième est la t°max.
 function getMinMax(temp){
     let MinMax = [];
     let min = temp[0];
     let max = temp[0];
-    let nb = 2;    
     for (let t of temp){
         if (t<min) {
             min = t;
@@ -14,39 +13,26 @@ function getMinMax(temp){
             max = t;
         }
     }
-    if (min == max){
-        nb = 1
-    }
     MinMax.push(min);
     MinMax.push(max);
-    MinMax.push(nb)
     return MinMax;
 };
 
 //Fonction d'extraction de deux icones de weather en matinée et en fin d'après-midi
 //Cette fonction prend comme paramètre un tableau d'icones
-//et renvoie un tableau contenant 3 données : l'icone de matinée, l'icone d'après-midi
-//et un paramètre indiquant si il s'agit de la même icone
+//et renvoie un tableau contenant 2 données : l'icone de matinée, l'icone d'après-midi
 function getTwoIcons(icons){
     let twoIcons = [];
-    let nb = 2;
-
-    if (icons.length > 5){
-        twoIcons.push(icons[icons.length - 6]);
+    if (icons.length > 4){
+        twoIcons.push(icons[icons.length - 5]);
         twoIcons.push(icons[icons.length - 3]);
-    } else if ((icons.length == 5)||(icons.length == 4)){
+    } else if (icons.length == 4){
         twoIcons.push(icons[0]);
         twoIcons.push(icons[icons.length - 3]);
     } else {
         twoIcons.push(icons[0]);
         twoIcons.push(icons[icons.length-1]);
     }
-
-    if (twoIcons[0] == twoIcons[1]){
-        nb = 1;
-    }
-
-    twoIcons.push(nb)
     return twoIcons
 };
 
@@ -70,25 +56,8 @@ const prepareSyntheseDay = (icons, temperatures, weekday) => {
             </div>
         </div>
     `
-    // daysContainer.innerHTML += byDay;
-    // //Si les valeurs de température min et max ou les icones sont identiques
-    // //ne pas afficher la deuxième
-    // if(twoIcons[2] == 1){
-    //     daysContainer.lastElementChild.querySelector(".synthese__icon--filtre").style.display = "none";
-    // }
-    // if(MinMax[2] == 1){
-    //     daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre").style.display = "none";
-    // }
     return byDay
 }
-
-
-
-
-
-
-
-
 
 
 //Affichage des données météo récupérées dans data, jour après jour, 
@@ -115,24 +84,6 @@ function displayweatherByHour (data){
             //à la fin d'un jour, avant de passer au suivant (sauf pour l'initialisation au premier jour) :
             if (temperatures.length > 0){
                 daysContainer.innerHTML += prepareSyntheseDay(icons, temperatures, weekdayForSynthese);
-                // let twoIcons = getTwoIcons(icons);
-                // let MinMax = getMinMax(temperatures);
-                // icons.splice(0,icons.length);
-                // temperatures.splice(0,temperatures.length);
-                // const byDay = `
-                //     <div class="synthese__day">
-                //         <h4 class="synthese__weekday">${weekdayForSynthese}</h4>
-                //         <div class="synthese__icons">
-                //             <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
-                //             <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
-                //         </div>
-                //         <div class="synthese__minmax">
-                //             <p class="synthese__temperature">${Math.round(MinMax[0])}°</p>
-                //             <p class="synthese__temperature--filtre">${Math.round(MinMax[1])}°</p>
-                //         </div>
-                //     </div>
-                // `
-                // daysContainer.innerHTML += byDay;
                 //Si les valeurs de température min et max ou les deux icones sont identiques
                 //ne pas afficher la deuxième
                 let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
