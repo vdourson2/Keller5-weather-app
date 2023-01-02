@@ -142,6 +142,7 @@ function createArraysWeather (data){
             }
             day += 1;
             i += 1;
+            console.log(i);
             if (i>5) break; //S'arrêter à la fin du 4ème jour après le jour actuel
             //Ajouter un nouvel élément dans le tableau des jours détaillés:
             let divDaysDetailed = document.createElement('div');
@@ -159,7 +160,9 @@ function createArraysWeather (data){
         //tableau des jours détaillés :
         arrayDaysDetailed[arrayDaysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
     }
-
+    if (i==5){
+        arraySyntheseDays.push(cardSyntheseDay(icons, temperatures, weekdayForSynthese)); 
+    }
     return {
         syntheseDays : arraySyntheseDays,
         daysDetailed : arrayDaysDetailed,
