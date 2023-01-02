@@ -38,7 +38,12 @@ function getTwoIcons(icons){
 
 //Refactor
 
-const prepareSyntheseDay = (icons, temperatures, weekday) => {
+
+//Fonction qui crée un contenu HTML reprenant la synthèse d'un jour
+//Prend comme paramètre un tableau des icones du jour, 
+//un tableau des températures du jour, et le jour de la semaine
+//et renvoie un string contenant les infos de synthèse sous forme HTML
+const cardSyntheseDay = (icons, temperatures, weekday) => {
     let twoIcons = getTwoIcons(icons);
     let MinMax = getMinMax(temperatures);
     icons.splice(0,icons.length);
@@ -60,12 +65,31 @@ const prepareSyntheseDay = (icons, temperatures, weekday) => {
 }
 
 
+const cardDaysDetailed = (date) =>{
+    const byDayDetailed = `
+            <h4 class="previsions__weekday">${date.toLocaleString("fr-FR",{weekday:"long"})}</h4>
+            <div class="previsions__divHours"></div>
+    `;
+    return byDayDetailed;
+}
+
+const cardByHours = (li, date) => {
+    const byHours = `
+        <div class="previsions__generalParHeure">
+            <p class="previsions__heure">${date.getHours()}h</p>
+            <img class="previsions__icone" src=" http://openweathermap.org/img/wn/${li.weather[0].icon}@2x.png" alt="icone de météo"/>
+            <p class="previsions__t">${Math.round(li.main.temp)}°</p>
+            <p class="previsions__descr">${li.weather[0].description}</p>
+        </div>
+    `;
+    return byHours;
+}
+
+
 //Affichage des données météo récupérées dans data, jour après jour, 
 //sous forme de synthese journalière d'une part,
 //et toutes les 3 heures par jour d'autre part.
 function displayweatherByHour (data){
-    const daysContainer = document.querySelector(".synthese");
-    const daysDetailedContainer = document.querySelector(".previsions");
     //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
     let previsionDate = new Date(data.list[0].dt*1000);
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
@@ -74,6 +98,8 @@ function displayweatherByHour (data){
     let weekdayForSynthese = previsionDate.toLocaleString("fr-FR",{weekday:"long"});
     let temperatures = [];
     let icons = [];
+    let arraySyntheseDays = [];
+    let daysDetailed = [];
     //Création des zones HTML pour chaque prévision de la liste et ajout de celles-ci dans le bon jour :
     for (let li of data.list){
         let currentPrevisionDate = new Date(li.dt*1000);
@@ -81,33 +107,18 @@ function displayweatherByHour (data){
         //Créer un nouveau jour :
         if (currentPrevisionDate.getDate() != day){            
             //Créer un nouvel encart avec le résumé du jour précédent 
-            //à la fin d'un jour, avant de passer au suivant (sauf pour l'initialisation au premier jour) :
+            //à la fin d'un jour, avant de passer au jour suivant (sauf pour l'initialisation au premier jour) :
             if (temperatures.length > 0){
-                daysContainer.innerHTML += prepareSyntheseDay(icons, temperatures, weekdayForSynthese);
-                //Si les valeurs de température min et max ou les deux icones sont identiques
-                //ne pas afficher la deuxième
-                let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
-                let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
-                let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
-                let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
-                if (icon1.src == iconFiltre.src){
-                    iconFiltre.style.display = "none";
-                }
-                if (temperature1.textContent == temperatureFiltre.textContent){
-                    temperatureFiltre.style.display = "none";
-                }
+                arraySyntheseDays.push(cardSyntheseDay(icons, temperatures, weekdayForSynthese)); 
             }
             day += 1;
             i += 1;
             if (i>5) break; //S'arrêter à la fin du 4ème jour après le jour actuel
             //Créer un zone dans laquelle les données par heure de la journée seront insérées,
-            const byDayDetailed = `
-                <div class="previsions__day">
-                    <h4 class="previsions__weekday">${currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"})}</h4>
-                    <div class="previsions__divHours"></div>
-                </div>
-            `;
-            daysDetailedContainer.innerHTML += byDayDetailed;   
+            let divDaysDetailed = document.createElement('div');
+            divDaysDetailed.classList.add('previsions__day');
+            divDaysDetailed.innerHTML = cardDaysDetailed(currentPrevisionDate);
+            daysDetailed.push(divDaysDetailed);  
         }
         //Ajout des données de l'heure dans les tableaux de températures et d'icones d'une journée
         //et enregistrement du weekday de cette journée.
@@ -115,15 +126,28 @@ function displayweatherByHour (data){
         icons.push(li.weather[0].icon);
         weekdayForSynthese = currentPrevisionDate.toLocaleString("fr-FR",{weekday:"long"});
         //Créer un zone pour la prévision à l'heure donnée, et la mettre dans la div du jour courant
-        const byHours = `
-            <div class="previsions__generalParHeure">
-                <p class="previsions__heure">${currentPrevisionDate.getHours()}h</p>
-                <img class="previsions__icone" src=" http://openweathermap.org/img/wn/${li.weather[0].icon}@2x.png" alt="icone de météo"/>
-                <p class="previsions__t">${Math.round(li.main.temp)}°</p>
-                <p class="previsions__descr">${li.weather[0].description}</p>
-            </div>
-        `;
-        daysDetailedContainer.lastElementChild.querySelector(".previsions__divHours").innerHTML += byHours;
+        daysDetailed[daysDetailed.length-1].lastElementChild.innerHTML += cardByHours(li, currentPrevisionDate);
+        // daysDetailedContainer.lastElementChild.querySelector(".previsions__divHours").innerHTML += byHours;
+    }
+    const daysContainer = document.querySelector(".synthese");
+    const daysDetailedContainer = document.querySelector(".previsions");
+    for (let el of arraySyntheseDays){
+        daysContainer.innerHTML += el;
+         //Si les valeurs de température min et max ou les deux icones sont identiques
+        //ne pas afficher la deuxième
+        let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
+        let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
+        let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
+        let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
+        if (icon1.src == iconFiltre.src){
+            iconFiltre.style.display = "none";
+        }
+        if (temperature1.textContent == temperatureFiltre.textContent){
+            temperatureFiltre.style.display = "none";
+        }
+    }
+    for (let el of daysDetailed){
+        daysDetailedContainer.appendChild(el);
     }
 }        
 
