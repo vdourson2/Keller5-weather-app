@@ -1,89 +1,4 @@
-//Fonction de calcul des températures min et max d'un tableau.
-//Cette fonction prend comme paramètre un tableau de températures,
-//et renvoie un tableau contenant 2 données : la première est la t°min, 
-//et la deuxième est la t°max.
-function getMinMax(temp){
-    let MinMax = [];
-    let min = temp[0];
-    let max = temp[0];
-    for (let t of temp){
-        if (t<min) {
-            min = t;
-        } else if(t>max){
-            max = t;
-        }
-    }
-    MinMax.push(min);
-    MinMax.push(max);
-    return MinMax;
-};
-
-//Fonction d'extraction de deux icones de weather en matinée et en fin d'après-midi
-//Cette fonction prend comme paramètre un tableau d'icones
-//et renvoie un tableau contenant 2 données : l'icone de matinée, et l'icone d'après-midi
-function getTwoIcons(icons){
-    let twoIcons = [];
-    if (icons.length > 4){
-        twoIcons.push(icons[icons.length - 5]);
-        twoIcons.push(icons[icons.length - 3]);
-    } else if (icons.length == 4){
-        twoIcons.push(icons[0]);
-        twoIcons.push(icons[icons.length - 3]);
-    } else {
-        twoIcons.push(icons[0]);
-        twoIcons.push(icons[icons.length-1]);
-    }
-    return twoIcons
-};
-
-//Refactor
-
-
-//Fonction qui crée un contenu HTML reprenant la synthèse d'un jour
-//Prend comme paramètre un tableau des icones du jour, 
-//un tableau des températures du jour, et le jour de la semaine
-//et renvoie un string contenant les infos de synthèse sous forme HTML
-const cardSyntheseDay = (icons, temperatures, weekday) => {
-    let twoIcons = getTwoIcons(icons);
-    let MinMax = getMinMax(temperatures);
-    icons.splice(0,icons.length);
-    temperatures.splice(0,temperatures.length);
-    const byDay = `
-        <div class="synthese__day">
-            <h4 class="synthese__weekday">${weekday}</h4>
-            <div class="synthese__icons">
-                <img class="synthese__icon" src=" http://openweathermap.org/img/wn/${twoIcons[0]}@2x.png" alt="icone de météo"/>
-                <img class="synthese__icon--filtre" src=" http://openweathermap.org/img/wn/${twoIcons[1]}@2x.png" alt="icone de météo"/>
-            </div>
-            <div class="synthese__minmax">
-                <p class="synthese__temperature">${Math.round(MinMax[0])}°</p>
-                <p class="synthese__temperature--filtre">${Math.round(MinMax[1])}°</p>
-            </div>
-        </div>
-    `
-    return byDay
-}
-
-
-const cardDaysDetailed = (date) =>{
-    const byDayDetailed = `
-            <h4 class="previsions__weekday">${date.toLocaleString("fr-FR",{weekday:"long"})}</h4>
-            <div class="previsions__divHours"></div>
-    `;
-    return byDayDetailed;
-}
-
-const cardByHours = (li, date) => {
-    const byHours = `
-        <div class="previsions__generalParHeure">
-            <p class="previsions__heure">${date.getHours()}h</p>
-            <img class="previsions__icone" src=" http://openweathermap.org/img/wn/${li.weather[0].icon}@2x.png" alt="icone de météo"/>
-            <p class="previsions__t">${Math.round(li.main.temp)}°</p>
-            <p class="previsions__descr">${li.weather[0].description}</p>
-        </div>
-    `;
-    return byHours;
-}
+import{cardSyntheseDay, cardDaysDetailed, cardByHours} from './htmlContent.js'
 
 //Fonction qui vérifie si les valeurs de température min et max et/ou les deux icones 
 //de la synthese du dernier jour encodé sont identiques, et qui n'affiche que la première valeur si c'est le cas.
@@ -142,7 +57,6 @@ function createArraysWeather (data){
             }
             day += 1;
             i += 1;
-            console.log(i);
             if (i>5) break; //S'arrêter à la fin du 4ème jour après le jour actuel
             //Ajouter un nouvel élément dans le tableau des jours détaillés:
             let divDaysDetailed = document.createElement('div');
@@ -189,7 +103,7 @@ async function getWeatherOnClick () {
 }
 
 //Récupération des données de localStorage
-// function getWeatherOnClick () {
+//function getWeatherOnClick () {
 //     let dataWeather = JSON.parse(localStorage.getItem("data"));
 //     createArraysWeather(dataWeather);
 //     }
