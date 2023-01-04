@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+$general : 'Lato', sans-serif;
+
+*{
+    margin : 0;
+    padding : 0
+}
+
+body{
+   background-color: whitesmoke; 
+   font-family: $general;
+}
+
+#formulaire{
+    text-align: center;
+    width : 80%;
+    margin : 10vw auto;
+    input{
+        font-size : 1.2em;
+        border-radius : 5px;
+        padding : 0.2em 0.5em;
+        width : 65%;
+        height : 1.5em;
+    }
+    button{
+        font-size : 1.2em;
+        border-radius : 5px;
+        padding : 0.2em 0.5em;
+        height : 2.2em;
+    }
+}
+
+h1{
+    text-align: center;
+    margin : 10vw;
+}
+
+//Zone de synthèse de la météo par jour
+.synthese{
+    color: white;
+    text-align : center;
+    display : flex;
+    height: 200px;
+    overflow-x: scroll;
+    width: auto;
+    &__day{
+        background-color:rgb(139, 139, 182);
+        border : 1px solid black;
+        width : 150px;
+        min-width: 150px;
+    }
+    &__weekday{
+        text-transform: uppercase;
+        padding : 20px 0;
+    }
+    &__icons{
+        display : flex;
+        justify-content: center;
+        // border : 1px solid black;
+    }
+    &__icon, &__icon--filtre{
+        display : block;
+        object-fit: cover;
+        width : 50px;
+        height: 50px;
+    }
+    &__minmax{
+        display : flex;
+        justify-content: center;
+        padding : 10px 0
+    }
+    &__temperature, &__temperature--filtre{
+        padding : 10px;
+    }
+}
+
+//Zone détaillée pour la météo toutes les 3 heures, pour chaque jour
+.previsions{
+    border : 0px solid black;
+    width : 90vw;
+    margin : 10vw auto;
+    text-align: center;
+    &__day{
+        border : 1px solid black;
+        background-color: white;
+        width : 60%;
+        max-width : 200px;
+        margin : 10vw auto;
+    }
+    &__weekday{
+        border : 1px solid black;
+        text-transform: uppercase;
+    }
+    &__generalParHeure{
+        border : 1px solid black;
+        padding : 5vw;    
+    }
+    &__icone{
+        width : 50px;
+        height: 50px;
+    }
+}
+
+@media screen and (min-width:900px){
+    #formulaire{
+        width : 40%;
+        margin : 4vw auto;
+    }
+
+    h1{
+        text-align: center;
+        margin : 3vw;
+    }
+
+    //@media zone de synthèse de la météo par jour
+    .synthese{
+        justify-content : center;
+        height: 240px;
+        &__day{
+            width : 180px;
+        }
+        &__weekday{
+            font-size: 1.1em;
+            padding : 30px 0;
+        }
+        &__icon, &__icon--filtre{
+            width : 60px;
+            height: 60px;
+        }
+        &__temperature, &__temperature--filtre{
+            font-size: 1.1em;
+        }
+    }
+
+    //@media zone détaillée pour la météo toutes les 3 heures, pour chaque jour
+    .previsions{
+        margin : 2vw auto;
+        text-align: center; //A vérifier
+        &__day{
+            width : 100%;
+            max-width: none;
+            margin : 2vw auto;
+        }
+        //Changé : 
+        &__divHours{
+            display : flex;
+            justify-content : flex-end;
+        }
+        &__generalParHeure{
+            border : 1px solid black;
+            padding : 1.4vw 1.8vw; 
+            box-sizing: border-box;
+            width : 12.5%;
+        }
+        &__icone{
+            width : 60px;
+            height: 60px;
+        }
+    }
+}
