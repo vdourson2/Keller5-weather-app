@@ -1,24 +1,9 @@
 import{cardSyntheseDay, cardDaysDetailed, cardByHours} from './htmlContent.js'
-
-//Fonction qui vérifie si les valeurs de température min et max et/ou les deux icones 
-//de la synthese du dernier jour encodé sont identiques, et qui n'affiche que la première valeur si c'est le cas.
-//La fonction prend comme argument une div contenant les jours de synthèse déjà encodés
-const filterIconsTemperatures = (daysContainer) => {
-    let icon1 = daysContainer.lastElementChild.querySelector(".synthese__icon");
-    let iconFiltre = daysContainer.lastElementChild.querySelector(".synthese__icon--filtre");
-    let temperature1 = daysContainer.lastElementChild.querySelector(".synthese__temperature");
-    let temperatureFiltre = daysContainer.lastElementChild.querySelector(".synthese__temperature--filtre")
-    if (icon1.src == iconFiltre.src){
-        iconFiltre.style.display = "none";
-    }
-    if (temperature1.textContent == temperatureFiltre.textContent){
-        temperatureFiltre.style.display = "none";
-    }
-}
+import{filterIconsTemperatures} from "./filterTempIcons.js"
 
 //Fonction qui prend comme argument un objet contenant deux tableaux
 //à afficher dans le DOM
-const displayArraysWeather = (arrays) => {
+export const displayArraysWeather = (arrays) => {
     let daysContainer = document.querySelector(".synthese");
     let daysDetailedContainer = document.querySelector(".previsions");
     for (let el of arrays.syntheseDays){
@@ -33,7 +18,7 @@ const displayArraysWeather = (arrays) => {
 //Traitement des données météo passées comme argument sous forme d'objet "data".
 //La fonction retourne un objet contenant deux tableaux :
 //un tableau avec les synthèses par jour et un tableau avec les prévisions détaillées heure par heure pour chaque jour 
-function createArraysWeather (data){
+export function createArraysWeather (data){
     //initialisation de la variable day qui permettra de repérer quand on passe au jour suivant
     let previsionDate = new Date(data.list[0].dt*1000);
     previsionDate.setHours(previsionDate.getUTCHours() + (data.city.timezone/3600))//heure UTC + décalage de timezone
@@ -83,42 +68,3 @@ function createArraysWeather (data){
     };
     
 }        
-
-//Récupération des données météo de l'API OpenWeather et affichage de celles-ci
-async function getWeatherOnClick () {
-    let country = input.value;
-    document.querySelector('#country').value="";
-    document.querySelector('.synthese').innerHTML=""; 
-    document.querySelector('.previsions').innerHTML=""; 
-    document.querySelector('h1').textContent = `Météo à ${country}`; 
-    try {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${country}&lang=fr&appid=13b1572aa8cbef567b34dcfca12134a7&units=metric`);
-        const json = await response.json();
-        localStorage.setItem("data",JSON.stringify(json));
-        displayArraysWeather(createArraysWeather(json));
-    }
-    catch(error) {
-        console.log('Erreur : impossible de récupérer les données')
-    }
-}
-
-//Récupération des données de localStorage
-//function getWeatherOnClick () {
-//     let dataWeather = JSON.parse(localStorage.getItem("data"));
-//     createArraysWeather(dataWeather);
-//     }
-
-//Deux évènements qui appellent la fct getWeatherOnClick
-//si on presse la touche enter, ou si on clique sur le bouton.
-let button = document.querySelector('button');
-let input = document.querySelector('#country');
-button.addEventListener('click', getWeatherOnClick);
-input.addEventListener('keyup', (e) => {
-    if (e.code == "Enter"){
-        getWeatherOnClick();
-    }
-})
-        
-        
-
-
